@@ -8,6 +8,7 @@ The requirements are to create a map (60 points) and add markers (40 points) per
 ## Process and Resources
 ### Timeline:  
 0817  Created repository, cloned locally, added and commited starter files, formatted README.md
+0818  Using Day 1: 10-Stu_GeoJson was able to load in the data, the tile layer, and bind the popups. Was not successful in changing the markers and need to review before completing.
 
 ### Links used:
 Used examples from Module 15 class activities.
