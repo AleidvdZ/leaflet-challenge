@@ -1,67 +1,42 @@
-// Store our API endpoint as queryUrl.
-let queryUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson";
-
-// Perform a GET request to the query URL/
-d3.json(queryUrl).then(function (data) {
-  // Once we get a response, send the data.features object to the createFeatures function.
-  createFeatures(data.features);
-});
-
-function createFeatures(earthquakeData) {
-
-  // Define a function that we want to run once for each feature in the features array.
-  // Give each feature a popup that describes the place and time of the earthquake.
-  function onEachFeature(feature, layer) {
-    layer.bindPopup(`<h3>${feature.properties.place}</h3><p>${new Date(feature.properties.time)}</p><hr><p>Magnitude: ${feature.properties.mag}</p><p>Depth: ${feature.geometry.coordinates[2]} km</p>`);
-  }
-
-  // Create a GeoJSON layer that contains the features array on the earthquakeData object.
-  // Run the onEachFeature function once for each piece of data in the array.
-  let earthquakes = L.geoJSON(earthquakeData, {
-    onEachFeature: onEachFeature
-  });
-
-  // Send our earthquakes layer to the createMap function/
-  createMap(earthquakes);
-}
-function createMap(earthquakes) {
+// Function to create the map
+function createMap(earthQuakes) {
 
   // Create the tile layer
   let street = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
   });
 
+  let topo = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+    attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
+  });
+
+  // Only one base layer can be shown at a time.
+  let baseMaps = {
+    "Street Map": street,
+    "Topographic Map": topo
+  };
+
+  // Create an overlayMaps object to hold the bikeStations layer.
+  let overlayMaps = {
+    "Earthquakes": earthQuakes
+  };
+
   // Create our map, giving it the streetmap and earthquakes layers to display on load.
   let myMap = L.map("map", {
-    center: [
-      37.09, -95.71
-    ],
-    zoom: 5,
-    layers: [street, earthquakes]
+  center: [
+    37.09, -95.71
+  ],
+  zoom: 5,
+  layers: [street, earthQuakes]
   });
+
+  // Create a layer control, and pass it baseMaps and overlayMaps. Add the layer control to the map.
+  L.control.layers(baseMaps, overlayMaps, {
+    collapsed: false
+  }).addTo(map);
 }
 
+function createMarkers(response) {
 
-
-
-
-
-
-
-
-
-//  //Loop through geometry to set marker size
-//   function markerSize(magnitude) {
-//     return Math.sqrt(magnitude) * 50;
-//   }  
-//     let markers = []
-      
-//     for (let i = 0; i < feature.length; i++) {
-//       L.circle(feature[i].properties.coordinates[0,1], {
-//         fillOpacity: 0.75,
-//         color: "white",
-//         fillColor: "green",
-//         radius: markerSize(feature[i].properties.mag)
-//       }).bindPopup(`<h3>${feature.properties.place}</h3><p>${new Date(feature.properties.time)}</p><hr><p>Magnitude: ${feature.properties.mag}</p><p>Depth: ${feature.geometry.coordinates[2]} km</p>`);
-        
-//       }
+  //Pull the earthquake information
+  // stopping here.  Need to pull in geojson
